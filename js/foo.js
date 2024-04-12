@@ -1,4 +1,6 @@
-document.addEventListener('DOMContentLoaded', (e) => {
+import '../node_modules/tesseract.js/dist/tesseract.min.js'
+
+const ocr = () => {
   const canvas = document.getElementById('drawing-board');
   const toolbar = document.getElementById('toolbar');
   const ctx = canvas.getContext('2d');
@@ -18,6 +20,16 @@ document.addEventListener('DOMContentLoaded', (e) => {
     if (e.target.id === 'clear') {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
+    if (e.target.id === 'to-text') {
+      const image = canvas.toDataURL;
+      (async () => {
+        const worker = await Tesseract.createWorker('eng');
+        // const ret = await worker.recognize(image);
+        const ret = await worker.recognize(canvas);
+        console.log(ret.data.text);
+        await worker.terminate();
+      })();
+    }
   });
 
   toolbar.addEventListener('change', e => {
@@ -30,8 +42,6 @@ document.addEventListener('DOMContentLoaded', (e) => {
     }
 
   });
-
-  // canvas.toDataURL
 
   // Mouse
   canvas.addEventListener('mousedown', (e) => {
@@ -74,7 +84,6 @@ document.addEventListener('DOMContentLoaded', (e) => {
     ctx.lineTo(e.touches[0].clientX - canvasOffsetX, e.touches[0].clientY);
     ctx.stroke();
   });
+};
 
-});
-
-
+export { ocr }
